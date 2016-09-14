@@ -1,0 +1,35 @@
+---
+
+##
+# This file is part of the `src-run/augustus-file-lock-library` project.
+#
+# (c) Rob Frawley 2nd <rmf@src.run>
+# (c) Scribe Inc      <scr@src.run>
+#
+# For the full copyright and license information, view the LICENSE.md
+# file distributed with this source code.
+##
+
+sudo     : false
+language : php
+php      : [ 5.6, 7.0 ]
+
+git:
+  depth : 3
+
+env:
+  global:
+    - secure: "DqnBUAcYsPfJWO/4ejBTpWbywGsVqEfz22FFopCSb9DC63BByww60Amisrf8rT21w3UiVZcgXErl7nS/ms7sfVnrXVEfqN03MtT8chjTEMFQfALQ1YxXpzcwPjK64t6Gf+6MRo7LqdVNAKjvUq6JvwdwyDBTZdaCjfnU5XJZNJlWopr92TFbzL6eOm2aitK85PRteszfu6XpaK2zJzJcJIcCXuSWf0yq7P6+beEdxyUFrDcISI2hU4xCmC6s3jaXmGu1VyIjVXlau2P3SEEjhDNPWioF3LpmtVPxp9nAtU5c8nnfzukl1R7imTeEAoudznfAt9+FtkF4C5oKS+mAdRtoCvYvIXAferoPxnhgNP6KCQ8sHHm1u0UDvaqylt3BwO9C/KAm1r6y/iSGP+X6Z4LJFh7chTopabNBf93JXoIyjKURCANKtMzEnHYrdGPvMBI5DOdXZj0r0VzjZFNxGk95cmRZFd39JXtG1IHKe5+Ahj59WY1fZQSCeyx6ijELuFapGavmKj6xKDJfVOcWiVNO7oRnERJparLhDuuUiLqiocf0tB8QAncYyYwp8s6ypFOv/ILvcjJVGRfSw2f2ribJkvPamYcP3gmblJdwvcMi6K6A6G8HUyNZOcoJRbQg4iWhE964tOH7ytIbbnUZxzKINd7dtqPi9x09+v2gsvs="
+
+install :
+  - bash .bldr/bldr -b up-env -q
+  - bash .bldr/bldr -b up-app -q
+
+script :
+  - bin/phpunit -vvv
+
+after_script :
+  - bash .bldr/bldr -b down-app -q
+  - bash .bldr/bldr -b down-env -q
+
+...

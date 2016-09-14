@@ -117,4 +117,3 @@ information.
 | __Dev Release__    | [![Packagist](https://src.run/augustus-file-lock-library/packagist_pre.svg)](https://src.run/augustus-file-lock-library/packagist) |
 | __License__        | [![License](https://src.run/augustus-file-lock-library/license.svg)](https://src.run/augustus-file-lock-library/license)           |
 | __Reference__      | [![License](https://src.run/augustus-file-lock-library/api.svg)](https://src.run/augustus-file-lock-library/api)                   |
-

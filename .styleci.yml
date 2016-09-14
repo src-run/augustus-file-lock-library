@@ -15,7 +15,6 @@ enabled:
 
 disabled:
   - simplified_null_return
-  - long_array_syntax
 
 finder :
   name    : [ "*.php", "*.twig" ]

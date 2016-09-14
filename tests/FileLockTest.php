@@ -146,6 +146,53 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $lock->setLogger($logger);
         $lock->release();
     }
+
+    /**
+     * @expectedException \SR\File\Lock\Exception\FileLockReleaseException
+     */
+    public function testReleaseLogger()
+    {
+        $logger = $this
+            ->getMockBuilder(NullLogger::class)
+            ->setMethods(['debug'])
+            ->getMock();
+
+        $logger
+            ->expects($this->once())
+            ->method('debug')
+            ->with('Could not release lock on file {file}.', [
+                'file' => __FILE__,
+            ])
+            ->willReturn(null);
+
+        $lock = new FileLock(__FILE__, null, $logger);
+
+        $lock->release();
+    }
+
+    /**
+     * @expectedException \SR\File\Lock\Exception\FileLockAcquireException
+     */
+    public function testAcquireLogger()
+    {
+        $logger = $this
+            ->getMockBuilder(NullLogger::class)
+            ->setMethods(['debug'])
+            ->getMock();
+
+        $logger
+            ->expects($this->once())
+            ->method('debug')
+            ->with('Could not acquire {desc} lock on file {file}.', [
+                'file' => __FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext',
+                'desc' => 'shared, non-blocking'
+            ])
+            ->willReturn(null);
+
+        $lock = new FileLock(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext', null, $logger);
+
+        $lock->acquire();
+    }
 }
 
 /* EOF */

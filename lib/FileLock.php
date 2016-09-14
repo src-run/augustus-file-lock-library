@@ -131,7 +131,7 @@ class FileLock implements FileLockInterface
      */
     final public function acquire()
     {
-        $type = LOCK_EX;
+        $type = LOCK_EX | LOCK_NB;
         $desc = 'exclusive';
 
         if (self::LOCK_SHARED & $this->options) {
@@ -139,9 +139,9 @@ class FileLock implements FileLockInterface
             $desc = 'shared';
         }
 
-        if (self::LOCK_NON_BLOCKING & $this->options) {
-            $type |= LOCK_NB;
-            $desc .= ', non-blocking';
+        if (self::LOCK_BLOCKING & $this->options) {
+            $type ^= LOCK_NB;
+            $desc .= ', blocking';
         }
 
         if (!$this->flockOperation($type)) {
@@ -193,8 +193,7 @@ class FileLock implements FileLockInterface
     private function setOptions($options)
     {
         if ($options === null) {
-            $options = self::LOCK_SHARED;
-            $options |= self::LOCK_NON_BLOCKING;
+            $options = self::LOCK_SHARED | self::LOCK_NON_BLOCKING;
         }
 
         if (self::LOCK_SHARED & $options && self::LOCK_EXCLUSIVE & $options) {

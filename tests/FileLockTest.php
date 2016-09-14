@@ -122,7 +122,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ->expects($this->once())
             ->method('debug')
             ->with('Successfully acquired {desc} lock on file {file}.', [
-                'desc' => 'shared, non-blocking',
+                'desc' => 'shared',
                 'file' => __FILE__,
             ])
             ->willReturn(null);
@@ -185,13 +185,25 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ->method('debug')
             ->with('Could not acquire {desc} lock on file {file}.', [
                 'file' => __FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext',
-                'desc' => 'shared, non-blocking'
+                'desc' => 'shared'
             ])
             ->willReturn(null);
 
         $lock = new FileLock(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext', null, $logger);
 
         $lock->acquire();
+    }
+
+    /**
+     * @expectedException \SR\File\Lock\Exception\FileLockAcquireException
+     */
+    public function testExclusiveLock()
+    {
+        $lock1 = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
+        $lock1->acquire();
+
+        $lock2 = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
+        $lock2->acquire();
     }
 }
 

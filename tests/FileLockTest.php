@@ -212,11 +212,11 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
     {
         $file = tempnam(sys_get_temp_dir(), 'lock-test');
         unlink($file);
-        $this->assertFalse(file_exists($file));
+        $this->assertFileNotExists($file);
 
         $lock = new FileLock($file);
         $lock->acquire();
-        $this->assertTrue(file_exists($file));
+        $this->assertFileExists($file);
 
         $lock->release();
         unlink($file);

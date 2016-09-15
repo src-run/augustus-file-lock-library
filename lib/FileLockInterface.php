@@ -12,15 +12,31 @@
 namespace SR\File\Lock;
 
 use Psr\Log\LoggerInterface;
+use SR\Log\LoggerAwareInterface;
 
 /**
  * Interface that a file lock.
  */
-interface FileLockInterface
+interface FileLockInterface extends LoggerAwareInterface
 {
+    /**
+     * Option for shared lock.
+     */
     const LOCK_SHARED = 1;
+
+    /**
+     * Option for exclusive lock.
+     */
     const LOCK_EXCLUSIVE = 2;
+
+    /**
+     * Option for non-blocking lock acquisition.
+     */
     const LOCK_NON_BLOCKING = 4;
+
+    /**
+     * Option for blocking lock acquisition.
+     */
     const LOCK_BLOCKING = 8;
 
     /**
@@ -68,11 +84,18 @@ interface FileLockInterface
     public function isNonBlocking();
 
     /**
+     * Returns if file handle is held.
+     *
+     * @return bool
+     */
+    public function hasResource();
+
+    /**
      * Returns the file handle.
      *
      * @return resource
      */
-    public function getHandle();
+    public function getResource();
 
     /**
      * Try to acquire a file lock.

@@ -31,19 +31,19 @@ class FileLock implements FileLockInterface
     private $file;
 
     /**
+     * @var resource
+     */
+    private $fileResource;
+
+    /**
      * @var int
      */
     private $options;
 
     /**
-     * @var resource
-     */
-    private $handle;
-
-    /**
      * @var bool
      */
-    private $acquired;
+    private $acquired = false;
 
     /**
      * FileLockInterface constructor.
@@ -54,10 +54,16 @@ class FileLock implements FileLockInterface
      */
     final public function __construct($file, $options = null, LoggerInterface $logger = null)
     {
-        $this->file = $file;
-        $this->acquired = false;
+        if (self::LOCK_SHARED & $options && self::LOCK_EXCLUSIVE & $options) {
+            throw new InvalidOptionsException('Lock cannot be both shared and exclusive.');
+        }
 
-        $this->setOptions($options);
+        if (self::LOCK_NON_BLOCKING & $options && self::LOCK_BLOCKING & $options) {
+            throw new InvalidOptionsException('Lock cannot be both non-blocking and blocking.');
+        }
+
+        $this->options = $options === null ? self::LOCK_SHARED | self::LOCK_NON_BLOCKING : $options;
+        $this->file = $file;
 
         if ($logger) {
             $this->setLogger($logger);
@@ -115,13 +121,23 @@ class FileLock implements FileLockInterface
     }
 
     /**
+     * Returns if file handle is held.
+     *
+     * @return bool
+     */
+    final public function hasResource()
+    {
+        return is_resource($this->fileResource);
+    }
+
+    /**
      * Returns the file handle.
      *
      * @return resource
      */
-    final public function getHandle()
+    final public function getResource()
     {
-        return $this->handle;
+        return $this->fileResource;
     }
 
     /**
@@ -144,7 +160,7 @@ class FileLock implements FileLockInterface
             $desc .= ', blocking';
         }
 
-        if (!$this->flockOperation($type)) {
+        if (!$this->fileLock($type)) {
             $this->logDebug('Could not acquire {desc} lock on file {file}.', [
                 'desc' => $desc,
                 'file' => $this->file,
@@ -168,7 +184,7 @@ class FileLock implements FileLockInterface
      */
     final public function release()
     {
-        if (!is_resource($this->handle) || !$this->flockOperation(LOCK_UN) || !fclose($this->handle)) {
+        if (!$this->hasResource() || !$this->fileLock(LOCK_UN) || !fclose($this->fileResource)) {
             $this->logDebug('Could not release lock on file {file}.', [
                 'file' => $this->file,
             ]);
@@ -186,45 +202,23 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * @param int|null $options
-     *
-     * @throws InvalidOptionsException
-     */
-    private function setOptions($options)
-    {
-        if ($options === null) {
-            $options = self::LOCK_SHARED | self::LOCK_NON_BLOCKING;
-        }
-
-        if (self::LOCK_SHARED & $options && self::LOCK_EXCLUSIVE & $options) {
-            throw new InvalidOptionsException('Lock for "%s" cannot be both shared and exclusive.', $this->file);
-        }
-
-        if (self::LOCK_NON_BLOCKING & $options && self::LOCK_BLOCKING & $options) {
-            throw new InvalidOptionsException('Lock for "%s" cannot be both non blocking and blocking.', $this->file);
-        }
-
-        $this->options = $options;
-    }
-
-    /**
      * @param int $operation
      *
      * @throws FileResourceException
      *
      * @return bool
      */
-    private function flockOperation($operation)
+    private function fileLock($operation)
     {
-        if (!$this->handle) {
-            $this->handle = @fopen($this->file, 'c');
+        if (!$this->hasResource()) {
+            $this->fileResource = @fopen($this->file, 'c+');
         }
 
-        if (!is_resource($this->handle)) {
+        if (!$this->hasResource()) {
             return false;
         }
 
-        return flock($this->handle, $operation);
+        return flock($this->fileResource, $operation);
     }
 }
 

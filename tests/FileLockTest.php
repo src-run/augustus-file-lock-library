@@ -42,7 +42,8 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($lock->isExclusive());
         $this->assertFalse($lock->isBlocking());
         $this->assertFalse($lock->isAcquired());
-        $this->assertNull($lock->getHandle());
+        $this->assertNull($lock->getResource());
+        $this->assertFalse($lock->hasResource());
     }
 
     /**
@@ -67,11 +68,11 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
         $lock->acquire();
         $this->assertTrue($lock->isAcquired());
-        $this->assertTrue(is_resource($lock->getHandle()));
+        $this->assertTrue(is_resource($lock->getResource()));
 
         $lock->release();
         $this->assertFalse($lock->isAcquired());
-        $this->assertFalse(is_resource($lock->getHandle()));
+        $this->assertFalse(is_resource($lock->getResource()));
     }
 
     /**
@@ -105,6 +106,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($lock->isExclusive());
         $this->assertTrue($lock->isBlocking());
         $this->assertTrue($lock->isAcquired());
+        $this->assertTrue($lock->hasResource());
 
         $lock->release();
 
@@ -185,7 +187,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ->method('debug')
             ->with('Could not acquire {desc} lock on file {file}.', [
                 'file' => __FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext',
-                'desc' => 'shared'
+                'desc' => 'shared',
             ])
             ->willReturn(null);
 
@@ -204,6 +206,20 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
         $lock2 = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
         $lock2->acquire();
+    }
+
+    public function testCreateFileOnLock()
+    {
+        $file = tempnam(sys_get_temp_dir(), 'lock-test');
+        unlink($file);
+        $this->assertFalse(file_exists($file));
+
+        $lock = new FileLock($file);
+        $lock->acquire();
+        $this->assertTrue(file_exists($file));
+
+        $lock->release();
+        unlink($file);
     }
 }
 

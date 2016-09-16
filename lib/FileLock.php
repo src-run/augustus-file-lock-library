@@ -14,7 +14,6 @@ namespace SR\File\Lock;
 use Psr\Log\LoggerInterface;
 use SR\File\Lock\Exception\FileLockAcquireException;
 use SR\File\Lock\Exception\FileLockReleaseException;
-use SR\File\Lock\Exception\FileResourceException;
 use SR\File\Lock\Exception\InvalidOptionException;
 use SR\Log\LoggerAwareTrait;
 

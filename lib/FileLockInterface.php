@@ -40,37 +40,37 @@ interface FileLockInterface extends LoggerAwareInterface
     const LOCK_BLOCKING = 8;
 
     /**
-     * FileLockInterface constructor.
+     * Construct file lock with file name and optional options bitmask and logger instance.
      *
-     * @param string          $file
-     * @param null|int        $options
-     * @param LoggerInterface $logger
+     * @param string          $file    The path to the file to lock
+     * @param null|int        $options An options bitmark to configure locking behavior
+     * @param LoggerInterface $logger  A logger instance enables acquire/release logging
      */
     public function __construct($file, $options = null, LoggerInterface $logger = null);
 
     /**
-     * Set file lock options.
+     * Assign the options bitmask to configure locking behavior.
      *
-     * @param int $options
+     * @param int $options An options bitmark to configure locking behavior
      */
     public function setOptions($options);
 
     /**
-     * Returns whether lock has been acquired.
+     * Returns true if lock has been acquired.
      *
      * @return bool
      */
     public function isAcquired();
 
     /**
-     * Returns if lock is shared.
+     * Returns true if lock is shared.
      *
      * @return bool
      */
     public function isShared();
 
     /**
-     * Returns if lock is exclusive.
+     * Returns true if lock is exclusive.
      *
      * @return bool
      */
@@ -84,14 +84,14 @@ interface FileLockInterface extends LoggerAwareInterface
     public function isBlocking();
 
     /**
-     * Returns if lock is non blocking.
+     * Returns true if lock is non blocking.
      *
      * @return bool
      */
     public function isNonBlocking();
 
     /**
-     * Returns if file handle is held.
+     * Returns true if file handle is held.
      *
      * @return bool
      */
@@ -112,7 +112,7 @@ interface FileLockInterface extends LoggerAwareInterface
     public function acquire();
 
     /**
-     * Release a file lock.
+     * Try to release a file lock.
      *
      * @return bool
      */

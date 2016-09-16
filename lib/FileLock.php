@@ -46,11 +46,11 @@ class FileLock implements FileLockInterface
     private $acquired;
 
     /**
-     * FileLockInterface constructor.
+     * Construct file lock with file name and optional options bitmask and logger instance.
      *
-     * @param string          $file
-     * @param null|int        $options
-     * @param LoggerInterface $logger
+     * @param string          $file    The path to the file to lock
+     * @param null|int        $options An options bitmark to configure locking behavior
+     * @param LoggerInterface $logger  A logger instance enables acquire/release logging
      */
     final public function __construct($file, $options = null, LoggerInterface $logger = null)
     {
@@ -61,11 +61,11 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Set file lock options.
+     * Assign the options bitmask to configure locking behavior.
      *
-     * @param int $options
+     * @param int $options An options bitmark to configure locking behavior
      *
-     * @throws InvalidOptionException
+     * @throws InvalidOptionException If conflicting options are passed
      */
     final public function setOptions($options)
     {
@@ -81,7 +81,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns whether lock has been acquired.
+     * Returns true if lock has been acquired.
      *
      * @return bool
      */
@@ -91,7 +91,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns if lock is shared.
+     * Returns true if lock is shared.
      *
      * @return bool
      */
@@ -101,7 +101,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns if lock is exclusive.
+     * Returns true if lock is exclusive.
      *
      * @return bool
      */
@@ -111,7 +111,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns if lock is blocking.
+     * Returns true if lock is blocking.
      *
      * @return bool
      */
@@ -121,7 +121,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns if lock is non blocking.
+     * Returns true if lock is non blocking.
      *
      * @return bool
      */
@@ -131,7 +131,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Returns if file handle is held.
+     * Returns true if file handle is held.
      *
      * @return bool
      */
@@ -180,7 +180,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * Release a file lock.
+     * Try to release a file lock.
      *
      * @return bool
      */
@@ -209,9 +209,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * @param int $operation
-     *
-     * @throws FileResourceException
+     * @param int $operation The flock bitmask operation.
      *
      * @return bool
      */

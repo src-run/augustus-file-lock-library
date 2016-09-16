@@ -1,9 +1,9 @@
 
 # [src-run] augustus-file-lock-library
 
-|       Travis-CI        |      Codacy Rating      |      Code Coverage      |        Style-CI         |
-|:----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
-| [![Travis](https://src.run/augustus-file-lock-library/travis.svg)](https://src.run/augustus-file-lock-library/travis) | [![Codacy](https://src.run/augustus-file-lock-library/codacy.svg)](https://src.run/augustus-file-lock-library/codacy) | [![Coveralls](https://src.run/augustus-file-lock-library/coveralls.svg)](https://src.run/augustus-file-lock-library/coveralls) | [![Coveralls](https://src.run/augustus-file-lock-library/styleci.svg)](https://src.run/augustus-file-lock-library/styleci) |
+|       Travis-CI        |      Codacy Rating      |      Code Coverage      |        Style-CI         |         Release         |    API Documentation    |
+|:----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|:-----------------------:|
+| [![Travis](https://src.run/augustus-file-lock-library/travis.svg)](https://src.run/augustus-file-lock-library/travis) | [![Codacy](https://src.run/augustus-file-lock-library/codacy.svg)](https://src.run/augustus-file-lock-library/codacy) | [![Coveralls](https://src.run/augustus-file-lock-library/coveralls.svg)](https://src.run/augustus-file-lock-library/coveralls) | [![Coveralls](https://src.run/augustus-file-lock-library/styleci.svg)](https://src.run/augustus-file-lock-library/styleci) | [![Packagist](https://src.run/augustus-file-lock-library/packagist.svg)](https://src.run/augustus-file-lock-library/packagist) | [![API Docs](https://src.run/augustus-file-lock-library/api.svg)](https://src.run/augustus-file-lock-library/api) | 
 
 
 ## Overview
@@ -116,4 +116,3 @@ information.
 | __Stable Release__ | [![Packagist](https://src.run/augustus-file-lock-library/packagist.svg)](https://src.run/augustus-file-lock-library/packagist)     |
 | __Dev Release__    | [![Packagist](https://src.run/augustus-file-lock-library/packagist_pre.svg)](https://src.run/augustus-file-lock-library/packagist) |
 | __License__        | [![License](https://src.run/augustus-file-lock-library/license.svg)](https://src.run/augustus-file-lock-library/license)           |
-| __Reference__      | [![License](https://src.run/augustus-file-lock-library/api.svg)](https://src.run/augustus-file-lock-library/api)                   |

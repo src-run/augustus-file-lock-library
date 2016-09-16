@@ -47,7 +47,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \SR\File\Lock\Exception\InvalidOptionsException
+     * @expectedException \SR\File\Lock\Exception\InvalidOptionException
      */
     public function testThrowsExceptionOnBlockingAndNonBlockingOptions()
     {
@@ -55,7 +55,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @expectedException \SR\File\Lock\Exception\InvalidOptionsException
+     * @expectedException \SR\File\Lock\Exception\InvalidOptionException
      */
     public function testThrowsExceptionOnSharedAndExclusiveOptions()
     {
@@ -123,8 +123,8 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $logger
             ->expects($this->once())
             ->method('debug')
-            ->with('Successfully acquired {desc} lock on file {file}.', [
-                'desc' => 'shared',
+            ->with('Successfully acquired {desc} lock on {file}.', [
+                'desc' => 'shared (non-blocking)',
                 'file' => __FILE__,
             ])
             ->willReturn(null);
@@ -140,7 +140,8 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $logger
             ->expects($this->once())
             ->method('debug')
-            ->with('Successfully released lock on file {file}.', [
+            ->with('Successfully released {desc} lock on {file}.', [
+                'desc' => 'shared (non-blocking)',
                 'file' => __FILE__,
             ])
             ->willReturn(null);
@@ -162,7 +163,8 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $logger
             ->expects($this->once())
             ->method('debug')
-            ->with('Could not release lock on file {file}.', [
+            ->with('Failed to release {desc} lock on {file}.', [
+                'desc' => 'shared (non-blocking)',
                 'file' => __FILE__,
             ])
             ->willReturn(null);
@@ -185,9 +187,9 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $logger
             ->expects($this->once())
             ->method('debug')
-            ->with('Could not acquire {desc} lock on file {file}.', [
+            ->with('Failed to acquire {desc} lock on {file}.', [
                 'file' => __FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext',
-                'desc' => 'shared',
+                'desc' => 'shared (non-blocking)',
             ])
             ->willReturn(null);
 

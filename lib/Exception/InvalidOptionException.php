@@ -16,7 +16,7 @@ use SR\Exception\InvalidArgumentException;
 /**
  * Invalid argument exception.
  */
-class InvalidOptionsException extends InvalidArgumentException
+class InvalidOptionException extends InvalidArgumentException
 {
 }
 

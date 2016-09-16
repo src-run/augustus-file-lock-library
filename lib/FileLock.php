@@ -15,7 +15,7 @@ use Psr\Log\LoggerInterface;
 use SR\File\Lock\Exception\FileLockAcquireException;
 use SR\File\Lock\Exception\FileLockReleaseException;
 use SR\File\Lock\Exception\FileResourceException;
-use SR\File\Lock\Exception\InvalidOptionsException;
+use SR\File\Lock\Exception\InvalidOptionException;
 use SR\Log\LoggerAwareTrait;
 
 /**
@@ -28,7 +28,7 @@ class FileLock implements FileLockInterface
     /**
      * @var string
      */
-    private $file;
+    private $fileName;
 
     /**
      * @var resource
@@ -43,7 +43,7 @@ class FileLock implements FileLockInterface
     /**
      * @var bool
      */
-    private $acquired = false;
+    private $acquired;
 
     /**
      * FileLockInterface constructor.
@@ -54,20 +54,30 @@ class FileLock implements FileLockInterface
      */
     final public function __construct($file, $options = null, LoggerInterface $logger = null)
     {
+        $this->fileName = $file;
+
+        $this->setOptions($options);
+        $this->setLogger($logger);
+    }
+
+    /**
+     * Set file lock options.
+     *
+     * @param int $options
+     *
+     * @throws InvalidOptionException
+     */
+    final public function setOptions($options)
+    {
         if (self::LOCK_SHARED & $options && self::LOCK_EXCLUSIVE & $options) {
-            throw new InvalidOptionsException('Lock cannot be both shared and exclusive.');
+            throw new InvalidOptionException('Lock cannot be both shared and exclusive.');
         }
 
         if (self::LOCK_NON_BLOCKING & $options && self::LOCK_BLOCKING & $options) {
-            throw new InvalidOptionsException('Lock cannot be both non-blocking and blocking.');
+            throw new InvalidOptionException('Lock cannot be both non-blocking and blocking.');
         }
 
         $this->options = $options === null ? self::LOCK_SHARED | self::LOCK_NON_BLOCKING : $options;
-        $this->file = $file;
-
-        if ($logger) {
-            $this->setLogger($logger);
-        }
     }
 
     /**
@@ -143,38 +153,30 @@ class FileLock implements FileLockInterface
     /**
      * Try to acquire a file lock.
      *
-     * @return bool
+     * @return $this
      */
     final public function acquire()
     {
-        $type = LOCK_EX | LOCK_NB;
-        $desc = 'exclusive';
+        if (!$this->fileLock($this->getAcquireOperation())) {
+            $this->logDebug(
+                'Failed to acquire {desc} lock on {file}.',
+                $this->getLogReplacements()
+            );
 
-        if (self::LOCK_SHARED & $this->options) {
-            $type = LOCK_EX;
-            $desc = 'shared';
-        }
-
-        if (self::LOCK_BLOCKING & $this->options) {
-            $type ^= LOCK_NB;
-            $desc .= ', blocking';
-        }
-
-        if (!$this->fileLock($type)) {
-            $this->logDebug('Could not acquire {desc} lock on file {file}.', [
-                'desc' => $desc,
-                'file' => $this->file,
-            ]);
-
-            throw new FileLockAcquireException('Could not acquire %s lock on file "%s"', $desc, $this->file);
+            throw new FileLockAcquireException(
+                'Failed to acquire %s lock on %s',
+                ...$this->getExceptionReplacements()
+            );
         }
 
         $this->acquired = true;
 
-        $this->logDebug('Successfully acquired {desc} lock on file {file}.', [
-            'desc' => $desc,
-            'file' => $this->file,
-        ]);
+        $this->logDebug(
+            'Successfully acquired {desc} lock on {file}.',
+            $this->getLogReplacements()
+        );
+
+        return $this;
     }
 
     /**
@@ -185,18 +187,23 @@ class FileLock implements FileLockInterface
     final public function release()
     {
         if (!$this->hasResource() || !$this->fileLock(LOCK_UN) || !fclose($this->fileResource)) {
-            $this->logDebug('Could not release lock on file {file}.', [
-                'file' => $this->file,
-            ]);
+            $this->logDebug(
+                'Failed to release {desc} lock on {file}.',
+                $this->getLogReplacements()
+            );
 
-            throw new FileLockReleaseException('Could not release lock on file "%s"', $this->file);
+            throw new FileLockReleaseException(
+                'Failed to release %s lock on %s',
+                ...$this->getExceptionReplacements()
+            );
         }
 
         $this->acquired = false;
 
-        $this->logDebug('Successfully released lock on file {file}.', [
-            'file' => $this->file,
-        ]);
+        $this->logDebug(
+            'Successfully released {desc} lock on {file}.',
+            $this->getLogReplacements()
+        );
 
         return true;
     }
@@ -211,7 +218,7 @@ class FileLock implements FileLockInterface
     private function fileLock($operation)
     {
         if (!$this->hasResource()) {
-            $this->fileResource = @fopen($this->file, 'c+');
+            $this->fileResource = @fopen($this->fileName, 'c+');
         }
 
         if (!$this->hasResource()) {
@@ -219,6 +226,50 @@ class FileLock implements FileLockInterface
         }
 
         return flock($this->fileResource, $operation);
+    }
+
+    /**
+     * @return int
+     */
+    private function getAcquireOperation()
+    {
+        $operation = self::LOCK_SHARED & $this->options ? LOCK_EX : LOCK_EX | LOCK_NB;
+
+        if (self::LOCK_BLOCKING & $this->options) {
+            $operation ^= LOCK_NB;
+        }
+
+        return $operation;
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getExceptionReplacements()
+    {
+        return array_values($this->getLogReplacements());
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getLogReplacements()
+    {
+        return [
+            'desc' => $this->getReplacementDescription(),
+            'file' => $this->fileName,
+        ];
+    }
+
+    /**
+     * @return string
+     */
+    private function getReplacementDescription()
+    {
+        $desc = self::LOCK_SHARED & $this->options ? 'shared' : 'exclusive';
+        $desc .= self::LOCK_BLOCKING & $this->options ? ' (blocking)' : ' (non-blocking)';
+
+        return $desc;
     }
 }
 

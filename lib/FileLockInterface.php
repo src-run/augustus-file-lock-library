@@ -49,6 +49,13 @@ interface FileLockInterface extends LoggerAwareInterface
     public function __construct($file, $options = null, LoggerInterface $logger = null);
 
     /**
+     * Set file lock options.
+     *
+     * @param int $options
+     */
+    public function setOptions($options);
+
+    /**
      * Returns whether lock has been acquired.
      *
      * @return bool

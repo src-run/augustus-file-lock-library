@@ -238,7 +238,7 @@ class FileLock implements FileLockInterface
     }
 
     /**
-     * @param int $operation The flock bitmask operation.
+     * @param int $operation The flock bitmask operation
      *
      * @return bool
      */

@@ -170,5 +170,3 @@ class FileLockGroup implements FileLockGroupInterface
         });
     }
 }
-
-/* EOF */

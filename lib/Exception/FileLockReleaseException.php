@@ -19,5 +19,3 @@ use SR\Exception\Runtime\RuntimeException;
 class FileLockReleaseException extends RuntimeException
 {
 }
-
-/* EOF */

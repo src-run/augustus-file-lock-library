@@ -299,5 +299,3 @@ class FileLock implements FileLockInterface
         return $desc;
     }
 }
-
-/* EOF */

@@ -99,5 +99,3 @@ interface FileLockInterface extends LockOptionsInterface, LoggerAwareInterface
      */
     public function release() : FileLockInterface;
 }
-
-/* EOF */

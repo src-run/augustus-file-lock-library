@@ -229,5 +229,3 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         unlink($file);
     }
 }
-
-/* EOF */

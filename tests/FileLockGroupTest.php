@@ -196,5 +196,3 @@ class FileLockGroupTest extends \PHPUnit_Framework_TestCase
         }, $files);
     }
 }
-
-/* EOF */

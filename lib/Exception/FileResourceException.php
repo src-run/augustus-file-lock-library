@@ -19,5 +19,3 @@ use SR\Exception\Runtime\RuntimeException;
 class FileResourceException extends RuntimeException
 {
 }
-
-/* EOF */

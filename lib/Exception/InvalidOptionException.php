@@ -19,5 +19,3 @@ use SR\Exception\Logic\InvalidArgumentException;
 class InvalidOptionException extends InvalidArgumentException
 {
 }
-
-/* EOF */

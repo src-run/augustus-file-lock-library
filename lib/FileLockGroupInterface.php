@@ -61,5 +61,3 @@ interface FileLockGroupInterface extends LockOptionsInterface, LoggerAwareInterf
      */
     public function release() : FileLockGroupInterface;
 }
-
-/* EOF */

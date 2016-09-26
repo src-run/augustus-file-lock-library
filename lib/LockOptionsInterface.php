@@ -36,5 +36,3 @@ interface LockOptionsInterface
      */
     const LOCK_BLOCKING = 8;
 }
-
-/* EOF */

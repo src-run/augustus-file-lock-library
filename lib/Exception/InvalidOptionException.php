@@ -11,10 +11,10 @@
 
 namespace SR\File\Lock\Exception;
 
-use SR\Exception\InvalidArgumentException;
+use SR\Exception\Logic\InvalidArgumentException;
 
 /**
- * Invalid argument exception.
+ * Exception used for when an invalid option or combination of options are during object setup/config.
  */
 class InvalidOptionException extends InvalidArgumentException
 {

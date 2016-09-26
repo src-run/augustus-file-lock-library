@@ -24,21 +24,21 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 {
     public function testConstruction()
     {
-        $lock = new FileLock(__FILE__);
+        $lock = new FileLock(new \SplFileInfo(__FILE__));
 
         $this->assertInstanceOf('SR\File\Lock\FileLock', $lock);
     }
 
     public function testConstructionWithLogger()
     {
-        $lock = new FileLock(__FILE__, null, new NullLogger());
+        $lock = new FileLock(new \SplFileInfo(__FILE__), null, new NullLogger());
 
         $this->assertInstanceOf('SR\File\Lock\FileLock', $lock);
     }
 
     public function testDefaultOptions()
     {
-        $lock = new FileLock(__FILE__);
+        $lock = new FileLock(new \SplFileInfo(__FILE__));
 
         $this->assertTrue($lock->isShared());
         $this->assertTrue($lock->isNonBlocking());
@@ -54,7 +54,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $this->expectException(InvalidOptionException::class);
         $this->expectExceptionMessage('Lock cannot be both non-blocking and blocking.');
 
-        new FileLock(__FILE__, FileLock::LOCK_BLOCKING | FileLock::LOCK_NON_BLOCKING);
+        new FileLock(new \SplFileInfo(__FILE__), FileLock::LOCK_BLOCKING | FileLock::LOCK_NON_BLOCKING);
     }
 
     public function testThrowsExceptionOnSharedAndExclusiveOptions()
@@ -62,12 +62,12 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         $this->expectException(InvalidOptionException::class);
         $this->expectExceptionMessage('Lock cannot be both shared and exclusive.');
 
-        new FileLock(__FILE__, FileLock::LOCK_SHARED | FileLock::LOCK_EXCLUSIVE);
+        new FileLock(new \SplFileInfo(__FILE__), FileLock::LOCK_SHARED | FileLock::LOCK_EXCLUSIVE);
     }
 
     public function testAcquireLock()
     {
-        $lock = new FileLock(__FILE__);
+        $lock = new FileLock(new \SplFileInfo(__FILE__));
 
         $lock->acquire();
         $this->assertTrue($lock->isAcquired());
@@ -80,7 +80,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowsExceptionOnReleaseOfUnacquired()
     {
-        $lock = new FileLock(__FILE__);
+        $lock = new FileLock(new \SplFileInfo(__FILE__));
 
         $this->expectException(FileLockReleaseException::class);
         $this->expectExceptionMessageRegExp('{Failed to release .+ lock on .+}');
@@ -90,7 +90,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
     public function testThrowsExceptionOnAcquireForInvalidFile()
     {
-        $lock = new FileLock(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext');
+        $lock = FileLock::create(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext');
 
         $this->expectException(FileLockAcquireException::class);
         $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
@@ -100,7 +100,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
     public function testOptions()
     {
-        $lock = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_BLOCKING);
+        $lock = FileLock::create(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_BLOCKING);
 
         $lock->acquire();
 
@@ -132,7 +132,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn(null);
 
-        $lock = new FileLock(__FILE__, null, $logger);
+        $lock = new FileLock(new \SplFileInfo(__FILE__), null, $logger);
         $lock->acquire();
 
         $logger = $this
@@ -169,7 +169,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn(null);
 
-        $lock = new FileLock(__FILE__, null, $logger);
+        $lock = new FileLock(new \SplFileInfo(__FILE__), null, $logger);
 
         $this->expectException(FileLockReleaseException::class);
         $this->expectExceptionMessageRegExp('{Failed to release .+ lock on .+}');
@@ -193,7 +193,8 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
             ])
             ->willReturn(null);
 
-        $lock = new FileLock(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext', null, $logger);
+        $lock = FileLock::create(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext', null)
+            ->setLogger($logger);
 
         $this->expectException(FileLockAcquireException::class);
         $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
@@ -203,10 +204,10 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
     public function testExclusiveLock()
     {
-        $lock1 = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
+        $lock1 = new FileLock(new \SplFileInfo(__FILE__), FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
         $lock1->acquire();
 
-        $lock2 = new FileLock(__FILE__, FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
+        $lock2 = new FileLock(new \SplFileInfo(__FILE__), FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
 
         $this->expectException(FileLockAcquireException::class);
         $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
@@ -220,7 +221,7 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
         unlink($file);
         $this->assertFileNotExists($file);
 
-        $lock = new FileLock($file);
+        $lock = FileLock::create($file);
         $lock->acquire();
         $this->assertFileExists($file);
 

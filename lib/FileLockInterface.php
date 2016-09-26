@@ -11,91 +11,72 @@
 
 namespace SR\File\Lock;
 
-use Psr\Log\LoggerInterface;
 use SR\Log\LoggerAwareInterface;
 
 /**
- * Interface that a file lock.
+ * Interface for single-file locks.
  */
-interface FileLockInterface extends LoggerAwareInterface
+interface FileLockInterface extends LockOptionsInterface, LoggerAwareInterface
 {
     /**
-     * Option for shared lock.
-     */
-    const LOCK_SHARED = 1;
-
-    /**
-     * Option for exclusive lock.
-     */
-    const LOCK_EXCLUSIVE = 2;
-
-    /**
-     * Option for non-blocking lock acquisition.
-     */
-    const LOCK_NON_BLOCKING = 4;
-
-    /**
-     * Option for blocking lock acquisition.
-     */
-    const LOCK_BLOCKING = 8;
-
-    /**
-     * Construct file lock with file name and optional options bitmask and logger instance.
+     * Assign (or re-assign) the file to lock.
      *
-     * @param string          $file    The path to the file to lock
-     * @param null|int        $options An options bitmark to configure locking behavior
-     * @param LoggerInterface $logger  A logger instance enables acquire/release logging
+     * @param \SplFileInfo $file The file to lock as an \SplFileInfo object
+     *
+     * @return FileLockInterface
      */
-    public function __construct($file, $options = null, LoggerInterface $logger = null);
+    public function setFile(\SplFileInfo $file) : FileLockInterface;
 
     /**
      * Assign the options bitmask to configure locking behavior.
      *
      * @param int $options An options bitmark to configure locking behavior
+     *
+     * @return FileLockInterface
      */
-    public function setOptions($options);
+    public function setOptions($options) : FileLockInterface;
 
     /**
      * Returns true if lock has been acquired.
      *
      * @return bool
      */
-    public function isAcquired();
+    public function isAcquired() : bool;
 
     /**
      * Returns true if lock is shared.
      *
      * @return bool
      */
-    public function isShared();
+    public function isShared() : bool;
 
     /**
      * Returns true if lock is exclusive.
      *
      * @return bool
      */
-    public function isExclusive();
+    public function isExclusive() : bool;
 
     /**
      * Returns if lock is blocking.
      *
      * @return bool
      */
-    public function isBlocking();
+    public function isBlocking() : bool;
 
     /**
      * Returns true if lock is non blocking.
      *
      * @return bool
      */
-    public function isNonBlocking();
+    public function isNonBlocking() : bool;
 
     /**
      * Returns true if file handle is held.
      *
      * @return bool
      */
-    public function hasResource();
+    public function hasResource() : bool;
 
     /**
      * Returns the file handle.
@@ -107,16 +88,16 @@ interface FileLockInterface extends LoggerAwareInterface
     /**
      * Try to acquire a file lock.
      *
-     * @return bool
+     * @return FileLockInterface
      */
-    public function acquire();
+    public function acquire() : FileLockInterface;
 
     /**
      * Try to release a file lock.
      *
-     * @return bool
+     * @return FileLockInterface
      */
-    public function release();
+    public function release() : FileLockInterface;
 }
 
 /* EOF */

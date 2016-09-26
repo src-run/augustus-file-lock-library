@@ -11,10 +11,10 @@
 
 namespace SR\File\Lock\Exception;
 
-use SR\Exception\RuntimeException;
+use SR\Exception\Runtime\RuntimeException;
 
 /**
- * File lock acquire exception.
+ * Exception used for when file lock acquisition fails.
  */
 class FileLockAcquireException extends RuntimeException
 {

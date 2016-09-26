@@ -11,10 +11,10 @@
 
 namespace SR\File\Lock\Exception;
 
-use SR\Exception\RuntimeException;
+use SR\Exception\Runtime\RuntimeException;
 
 /**
- * File resource exception.
+ * Exception used for when the file resource handle could not be retrieved or another resource error occurs.
  */
 class FileResourceException extends RuntimeException
 {

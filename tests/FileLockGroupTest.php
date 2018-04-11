@@ -11,7 +11,6 @@
 
 namespace SR\File\Lock\Tests;
 
-use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\TestCase;
 use SR\File\Lock\Exception\FileLockAcquireException;
 use SR\File\Lock\Exception\FileLockReleaseException;
@@ -57,7 +56,7 @@ class FileLockGroupTest extends TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function ($builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire', 'release', 'isAcquired']);
@@ -87,7 +86,7 @@ class FileLockGroupTest extends TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function ($builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire', 'release']);
@@ -120,7 +119,7 @@ class FileLockGroupTest extends TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function ($builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire']);

@@ -36,7 +36,7 @@ class FileLockGroup implements FileLockGroupInterface
     /**
      * @param null|int        $options
      * @param LoggerInterface $logger
-     * @param \SplFileInfo[] ...$files
+     * @param \SplFileInfo[]  ...$files
      */
     public function __construct(int $options = null, LoggerInterface $logger = null, \SplFileInfo ...$files)
     {
@@ -47,12 +47,12 @@ class FileLockGroup implements FileLockGroupInterface
     }
 
     /**
-     * @param null|int $options
+     * @param null|int                $options
      * @param \SplFileInfo[]|string[] ...$files
      *
      * @return static|FileLockGroupInterface
      */
-    public static function create(int $options = null, ...$files) : FileLockGroupInterface
+    public static function create(int $options = null, ...$files): FileLockGroupInterface
     {
         return new static($options, null, ...array_map(function ($file) {
             return $file instanceof \SplFileInfo ? $file : new \SplFileInfo($file);
@@ -64,7 +64,7 @@ class FileLockGroup implements FileLockGroupInterface
      *
      * @return FileLockGroupInterface
      */
-    public function setLocks(\SplFileInfo ...$locks) : FileLockGroupInterface
+    public function setLocks(\SplFileInfo ...$locks): FileLockGroupInterface
     {
         $this->locks = array_map(function (\SplFileInfo $file) {
             return new FileLock($file);
@@ -78,7 +78,7 @@ class FileLockGroup implements FileLockGroupInterface
      *
      * @return FileLock[]
      */
-    public function getLocks() : array
+    public function getLocks(): array
     {
         return $this->locks;
     }
@@ -88,7 +88,7 @@ class FileLockGroup implements FileLockGroupInterface
      *
      * @return bool
      */
-    public function isAcquired() : bool
+    public function isAcquired(): bool
     {
         foreach ($this->locks as $lock) {
             if (!$lock->isAcquired()) {
@@ -104,7 +104,7 @@ class FileLockGroup implements FileLockGroupInterface
      *
      * @return FileLockGroupInterface
      */
-    public function acquire() : FileLockGroupInterface
+    public function acquire(): FileLockGroupInterface
     {
         try {
             array_walk($this->locks, function (FileLock $lock) {
@@ -137,7 +137,7 @@ class FileLockGroup implements FileLockGroupInterface
      *
      * @return FileLockGroupInterface
      */
-    public function release() : FileLockGroupInterface
+    public function release(): FileLockGroupInterface
     {
         try {
             array_walk($this->locks, function (FileLock $lock) {

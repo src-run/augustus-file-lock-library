@@ -11,6 +11,7 @@
 
 namespace SR\File\Lock\Tests;
 
+use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use SR\File\Lock\Exception\FileLockAcquireException;
 use SR\File\Lock\Exception\FileLockReleaseException;
@@ -20,7 +21,7 @@ use SR\File\Lock\FileLock;
 /**
  * @covers \SR\File\Lock\FileLock
  */
-class FileLockTest extends \PHPUnit_Framework_TestCase
+class FileLockTest extends TestCase
 {
     public function testConstruction()
     {
@@ -71,11 +72,11 @@ class FileLockTest extends \PHPUnit_Framework_TestCase
 
         $lock->acquire();
         $this->assertTrue($lock->isAcquired());
-        $this->assertTrue(is_resource($lock->getResource()));
+        $this->assertInternalType('resource', $lock->getResource());
 
         $lock->release();
         $this->assertFalse($lock->isAcquired());
-        $this->assertFalse(is_resource($lock->getResource()));
+        $this->assertInternalType('resource', $lock->getResource());
     }
 
     public function testThrowsExceptionOnReleaseOfUnacquired()

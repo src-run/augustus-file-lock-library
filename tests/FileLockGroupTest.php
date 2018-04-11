@@ -11,6 +11,8 @@
 
 namespace SR\File\Lock\Tests;
 
+use PHPUnit\Framework\MockObject\MockBuilder;
+use PHPUnit\Framework\TestCase;
 use SR\File\Lock\Exception\FileLockAcquireException;
 use SR\File\Lock\Exception\FileLockReleaseException;
 use SR\File\Lock\FileLock;
@@ -19,7 +21,7 @@ use SR\File\Lock\FileLockGroup;
 /**
  * @covers \SR\File\Lock\FileLockGroup
  */
-class FileLockGroupTest extends \PHPUnit_Framework_TestCase
+class FileLockGroupTest extends TestCase
 {
     public function testConstruction()
     {
@@ -55,7 +57,7 @@ class FileLockGroupTest extends \PHPUnit_Framework_TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (\PHPUnit_Framework_MockObject_MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire', 'release', 'isAcquired']);
@@ -85,7 +87,7 @@ class FileLockGroupTest extends \PHPUnit_Framework_TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (\PHPUnit_Framework_MockObject_MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire', 'release']);
@@ -118,7 +120,7 @@ class FileLockGroupTest extends \PHPUnit_Framework_TestCase
         $lock = new FileLockGroup();
         $prop = (new \ReflectionObject($lock))->getProperty('locks');
         $prop->setAccessible(true);
-        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (\PHPUnit_Framework_MockObject_MockBuilder $builder) {
+        $prop->setValue($lock, $locks = $this->getFileLocks(20, function (MockBuilder $builder) {
             $builder
                 ->disableOriginalConstructor()
                 ->setMethods(['acquire']);
@@ -184,7 +186,7 @@ class FileLockGroupTest extends \PHPUnit_Framework_TestCase
     {
         $base = __DIR__.'/../lib/';
         $files = array_filter(scandir($base), function ($file) use ($base) {
-            return $file !== '.' && $file !== '..' && is_file($base.$file);
+            return '.' !== $file && '..' !== $file && is_file($base.$file);
         });
 
         if (!$fileObjects) {

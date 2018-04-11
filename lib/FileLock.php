@@ -25,16 +25,6 @@ class FileLock implements FileLockInterface
     use LoggerAwareTrait;
 
     /**
-     * @var \SplFileInfo
-     */
-    private $file;
-
-    /**
-     * @var resource
-     */
-    private $handle;
-
-    /**
      * @var int
      */
     protected $options;
@@ -43,6 +33,16 @@ class FileLock implements FileLockInterface
      * @var bool
      */
     protected $acquired;
+
+    /**
+     * @var \SplFileInfo
+     */
+    private $file;
+
+    /**
+     * @var resource
+     */
+    private $handle;
 
     /**
      * Construct file lock with file name and optional options bit mask and logger instance.
@@ -66,7 +66,7 @@ class FileLock implements FileLockInterface
      *
      * @return static|FileLockInterface
      */
-    public static function create($file, int $options = null) : FileLockInterface
+    public static function create($file, int $options = null): FileLockInterface
     {
         return new static($file instanceof \SplFileInfo ? $file : new \SplFileInfo($file), $options);
     }
@@ -80,7 +80,7 @@ class FileLock implements FileLockInterface
      *
      * @return FileLockInterface
      */
-    public function setOptions($options) : FileLockInterface
+    public function setOptions($options): FileLockInterface
     {
         if (FileLockInterface::LOCK_SHARED & $options && FileLockInterface::LOCK_EXCLUSIVE & $options) {
             throw new InvalidOptionException('Lock cannot be both shared and exclusive.');
@@ -90,7 +90,7 @@ class FileLock implements FileLockInterface
             throw new InvalidOptionException('Lock cannot be both non-blocking and blocking.');
         }
 
-        $this->options = $options === null ? FileLockInterface::LOCK_SHARED | FileLockInterface::LOCK_NON_BLOCKING : $options;
+        $this->options = null === $options ? FileLockInterface::LOCK_SHARED | FileLockInterface::LOCK_NON_BLOCKING : $options;
 
         return $this;
     }
@@ -102,7 +102,7 @@ class FileLock implements FileLockInterface
      *
      * @return FileLockInterface
      */
-    public function setFile(\SplFileInfo $file) : FileLockInterface
+    public function setFile(\SplFileInfo $file): FileLockInterface
     {
         $this->file = $file;
 
@@ -114,7 +114,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function hasResource() : bool
+    public function hasResource(): bool
     {
         return is_resource($this->handle);
     }
@@ -134,9 +134,9 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function isAcquired() : bool
+    public function isAcquired(): bool
     {
-        return $this->acquired === true;
+        return true === $this->acquired;
     }
 
     /**
@@ -144,7 +144,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function isShared() : bool
+    public function isShared(): bool
     {
         return (bool) (FileLockInterface::LOCK_SHARED & $this->options);
     }
@@ -154,7 +154,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function isExclusive() : bool
+    public function isExclusive(): bool
     {
         return (bool) (FileLockInterface::LOCK_EXCLUSIVE & $this->options);
     }
@@ -164,7 +164,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function isBlocking() : bool
+    public function isBlocking(): bool
     {
         return (bool) (FileLockInterface::LOCK_BLOCKING & $this->options);
     }
@@ -174,7 +174,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    public function isNonBlocking() : bool
+    public function isNonBlocking(): bool
     {
         return (bool) (FileLockInterface::LOCK_NON_BLOCKING & $this->options);
     }
@@ -184,7 +184,7 @@ class FileLock implements FileLockInterface
      *
      * @return FileLockInterface
      */
-    public function acquire() : FileLockInterface
+    public function acquire(): FileLockInterface
     {
         if (!$this->fileLock($this->getAcquireOperation())) {
             $this->logDebug(
@@ -213,7 +213,7 @@ class FileLock implements FileLockInterface
      *
      * @return FileLockInterface
      */
-    public function release() : FileLockInterface
+    public function release(): FileLockInterface
     {
         if (!$this->hasResource() || !$this->fileLock(LOCK_UN) || !fclose($this->handle)) {
             $this->logDebug(
@@ -242,7 +242,7 @@ class FileLock implements FileLockInterface
      *
      * @return bool
      */
-    private function fileLock($operation) : bool
+    private function fileLock($operation): bool
     {
         if (!$this->hasResource()) {
             $this->handle = @fopen($this->file->getPathname(), 'c+');
@@ -258,7 +258,7 @@ class FileLock implements FileLockInterface
     /**
      * @return int
      */
-    private function getAcquireOperation() : int
+    private function getAcquireOperation(): int
     {
         $operation = self::LOCK_SHARED & $this->options ? LOCK_EX : LOCK_EX | LOCK_NB;
 
@@ -272,7 +272,7 @@ class FileLock implements FileLockInterface
     /**
      * @return string[]
      */
-    private function getExceptionReplacements() : array
+    private function getExceptionReplacements(): array
     {
         return array_values($this->getLogReplacements());
     }
@@ -280,7 +280,7 @@ class FileLock implements FileLockInterface
     /**
      * @return string[]
      */
-    private function getLogReplacements() : array
+    private function getLogReplacements(): array
     {
         return [
             'desc' => $this->getReplacementDescription(),
@@ -291,7 +291,7 @@ class FileLock implements FileLockInterface
     /**
      * @return string
      */
-    private function getReplacementDescription() : string
+    private function getReplacementDescription(): string
     {
         $desc = self::LOCK_SHARED & $this->options ? 'shared' : 'exclusive';
         $desc .= self::LOCK_BLOCKING & $this->options ? ' (blocking)' : ' (non-blocking)';

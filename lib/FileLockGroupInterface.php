@@ -19,45 +19,45 @@ use SR\Log\LoggerAwareInterface;
 interface FileLockGroupInterface extends LockOptionsInterface, LoggerAwareInterface
 {
     /**
-     * @param null|int $options
+     * @param null|int                $options
      * @param \SplFileInfo[]|string[] ...$files
      *
      * @return static|FileLockGroupInterface
      */
-    public static function create(int $options = null, ...$files) : FileLockGroupInterface;
+    public static function create(int $options = null, ...$files): self;
 
     /**
      * @param \SplFileInfo[] ...$locks
      *
      * @return FileLockGroupInterface
      */
-    public function setLocks(\SplFileInfo ...$locks) : FileLockGroupInterface;
+    public function setLocks(\SplFileInfo ...$locks): self;
 
     /**
      * Returns array of file locks.
      *
      * @return FileLock[]
      */
-    public function getLocks() : array;
+    public function getLocks(): array;
 
     /**
      * Returns true if lock group has been acquired.
      *
      * @return bool
      */
-    public function isAcquired() : bool;
+    public function isAcquired(): bool;
 
     /**
      * Try to acquire a file lock group.
      *
      * @return FileLockGroupInterface
      */
-    public function acquire() : FileLockGroupInterface;
+    public function acquire(): self;
 
     /**
      * Try to release a file lock.
      *
      * @return FileLockGroupInterface
      */
-    public function release() : FileLockGroupInterface;
+    public function release(): self;
 }

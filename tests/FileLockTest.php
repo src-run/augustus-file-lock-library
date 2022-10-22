@@ -72,11 +72,11 @@ class FileLockTest extends TestCase
 
         $lock->acquire();
         $this->assertTrue($lock->isAcquired());
-        $this->assertInternalType('resource', $lock->getResource());
+        $this->assertIsResource($lock->getResource());
 
         $lock->release();
         $this->assertFalse($lock->isAcquired());
-        $this->assertInternalType('resource', $lock->getResource());
+        $this->assertIsResource($lock->getResource());
     }
 
     public function testThrowsExceptionOnReleaseOfUnacquired()
@@ -84,7 +84,7 @@ class FileLockTest extends TestCase
         $lock = new FileLock(new \SplFileInfo(__FILE__));
 
         $this->expectException(FileLockReleaseException::class);
-        $this->expectExceptionMessageRegExp('{Failed to release .+ lock on .+}');
+        $this->expectExceptionMessageMatches('{Failed to release .+ lock on .+}');
 
         $lock->release();
     }
@@ -94,7 +94,7 @@ class FileLockTest extends TestCase
         $lock = FileLock::create(__FILE__.DIRECTORY_SEPARATOR.'does-not-exist.ext');
 
         $this->expectException(FileLockAcquireException::class);
-        $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
+        $this->expectExceptionMessageMatches('{Failed to acquire .+ lock on .+}');
 
         $lock->acquire();
     }
@@ -173,7 +173,7 @@ class FileLockTest extends TestCase
         $lock = new FileLock(new \SplFileInfo(__FILE__), null, $logger);
 
         $this->expectException(FileLockReleaseException::class);
-        $this->expectExceptionMessageRegExp('{Failed to release .+ lock on .+}');
+        $this->expectExceptionMessageMatches('{Failed to release .+ lock on .+}');
 
         $lock->release();
     }
@@ -198,7 +198,7 @@ class FileLockTest extends TestCase
             ->setLogger($logger);
 
         $this->expectException(FileLockAcquireException::class);
-        $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
+        $this->expectExceptionMessageMatches('{Failed to acquire .+ lock on .+}');
 
         $lock->acquire();
     }
@@ -211,7 +211,7 @@ class FileLockTest extends TestCase
         $lock2 = new FileLock(new \SplFileInfo(__FILE__), FileLock::LOCK_EXCLUSIVE | FileLock::LOCK_NON_BLOCKING);
 
         $this->expectException(FileLockAcquireException::class);
-        $this->expectExceptionMessageRegExp('{Failed to acquire .+ lock on .+}');
+        $this->expectExceptionMessageMatches('{Failed to acquire .+ lock on .+}');
 
         $lock2->acquire();
     }
@@ -220,7 +220,7 @@ class FileLockTest extends TestCase
     {
         $file = tempnam(sys_get_temp_dir(), 'lock-test');
         unlink($file);
-        $this->assertFileNotExists($file);
+        $this->assertFileDoesNotExist($file);
 
         $lock = FileLock::create($file);
         $lock->acquire();
